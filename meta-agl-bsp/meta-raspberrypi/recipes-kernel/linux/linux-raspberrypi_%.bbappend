@@ -2,6 +2,18 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}:"
 
 require recipes-kernel/linux/linux-agl.inc
 
+# ENABLE DSI
+
+# Enable DSI for Raspberry Pi 3 by adding overlays for 7inch touch
+# https://github.com/k-quigley/linux/commits/rpi-4.14.y
+python () {
+    if d.getVar('ENABLE_DSI') == '1' and d.getVar('MACHINE') == 'raspberrypi3':
+        d.appendVar('SRC_URI', ' file://dsi/0001-Add-devicetree-support-for-RaspberryPi-7-panel-over-.patch')
+        d.appendVar('SRC_URI', ' file://dsi/0002-drm-vc4-Make-DSI-call-into-the-bridge-after-the-DSI-.patch')
+        d.appendVar('SRC_URI', ' file://dsi/0003-drm-vc4-Set-up-the-DSI-host-at-pdev-probe-time-not-c.patch')
+        d.appendVar('SRC_URI', ' file://dsi/0004-drm-panel-Backport-4.15-support-for-the-Raspberry-Pi.patch')
+}
+
 # NOTE: Kprobes need to be disabled until linux-raspberrypi gets updated
 #       to newer than 4.14.104 to avoid lttng-modules failing to build.
 SRC_URI_append = "\
